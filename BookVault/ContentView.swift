@@ -5,17 +5,21 @@
 //  Created by Mathesh Yogeswaran on 05/05/2026.
 //
 
+
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var vm = LibraryViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if vm.isLoggedIn {
+                // Now we point to the real list view
+                BookListView(vm: vm)
+            } else {
+                AuthView(vm: vm)
+            }
         }
-        .padding()
     }
 }
 
