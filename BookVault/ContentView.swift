@@ -14,8 +14,19 @@ struct ContentView: View {
     var body: some View {
         Group {
             if vm.isLoggedIn {
-                // Now we point to the real list view
-                BookListView(vm: vm)
+                TabView {
+                    // TAB 1: The Book List
+                    BookListView(vm: vm)
+                        .tabItem {
+                            Label("Vault", systemImage: "lock.shield")
+                        }
+
+                    // TAB 2: The Profile
+                    ProfileView(vm: vm)
+                        .tabItem {
+                            Label("Profile", systemImage: "person.crop.circle")
+                        }
+                }
             } else {
                 AuthView(vm: vm)
             }

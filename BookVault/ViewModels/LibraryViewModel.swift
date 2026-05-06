@@ -16,11 +16,24 @@ class LibraryViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @Published var showStatusAlert = false
     @Published var statusMessage = ""
+    @Published var username: String = ""
     
     // Use your Mac's IP if 127.0.0.1 fails
     let apiBase = "http://127.0.0.1:3000/api"
     
     init() {}
+    
+    func logout() {
+        self.isLoggedIn = false
+        self.token = ""
+        self.username = ""
+        self.books = []
+    }
+    
+    struct LoginResponse: Codable {
+        let accessToken: String
+        let username: String
+    }
 
     @MainActor
     func authenticate(user: String, pass: String, isSignup: Bool) async {
@@ -41,6 +54,7 @@ class LibraryViewModel: ObservableObject {
                 if (200...201).contains(httpResponse.statusCode) {
                     let decoded = try JSONDecoder().decode(LoginResponse.self, from: data)
                     self.token = decoded.accessToken
+                    self.username = decoded.username
                     self.isLoggedIn = true
                     await fetchBooks()
                 } else {
@@ -120,4 +134,5 @@ class LibraryViewModel: ObservableObject {
         self.showStatusAlert = true
     }
 }
+
 

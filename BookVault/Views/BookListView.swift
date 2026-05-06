@@ -24,15 +24,11 @@ struct BookListView: View {
             }
             .navigationTitle("My Library")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Logout") {
-                        vm.isLoggedIn = false
-                        vm.token = ""
-                    }
-                }
+               
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showAddBook = true }) {
-                        Image(systemName: "plus")
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title3)
                     }
                 }
             }
