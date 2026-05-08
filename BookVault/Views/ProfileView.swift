@@ -7,40 +7,61 @@
 import SwiftUI
 
 struct ProfileView: View {
+    
     @ObservedObject var vm: LibraryViewModel
     
     var body: some View {
-        NavigationView {
-            List {
-                Section(header: Text("Account Information")) {
+        
+        AppBackground {
+            
+            VStack(spacing: 20) {
+                
+                Text("Profile")
+                    .font(.largeTitle.bold())
+                    .foregroundColor(.white)
+                
+                VStack(spacing: 15) {
+                    
                     HStack {
                         Text("Username")
                         Spacer()
-                        Text(vm.username).foregroundColor(.secondary)
+                        Text(vm.username)
+                            .foregroundColor(.gray)
                     }
-                }
-                
-                Section {
-                    Button(action: {
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(15)
+                    
+                    Button {
                         vm.logout()
-                    }) {
-                        HStack {
-                            Spacer()
-                            Text("Log Out")
-                                .foregroundColor(.red)
-                                .bold()
-                            Spacer()
-                        }
+                    } label: {
+                        Text("Log Out")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(15)
                     }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("About Vault")
+                            .font(.headline)
+                        
+                        Text("Your books are securely stored and linked to your account.")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(15)
                 }
+                .padding()
+                .background(.white.opacity(0.9))
+                .cornerRadius(25)
+                .padding(.horizontal)
                 
-                Section(header: Text("About Vault")) {
-                    Text("This is a secure personal library. Your books are encrypted and tied to your unique account ID.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Spacer()
             }
-            .navigationTitle("Profile")
         }
     }
 }

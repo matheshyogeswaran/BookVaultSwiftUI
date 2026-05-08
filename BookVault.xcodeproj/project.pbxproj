@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A66A77F02FADEC9200DCA8EF /* AppBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = A66A77EF2FADEC9100DCA8EF /* AppBackground.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A64D9B052FA9E8BC00D6CD35 /* BookVault.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BookVault.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A66A77EF2FADEC9100DCA8EF /* AppBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBackground.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -47,6 +52,7 @@
 			children = (
 				A64D9B072FA9E8BC00D6CD35 /* BookVault */,
 				A64D9B062FA9E8BC00D6CD35 /* Products */,
+				A66A77EF2FADEC9100DCA8EF /* AppBackground.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A66A77F02FADEC9200DCA8EF /* AppBackground.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
