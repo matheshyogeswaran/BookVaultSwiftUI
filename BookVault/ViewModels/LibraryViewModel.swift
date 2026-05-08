@@ -21,14 +21,30 @@ class LibraryViewModel: ObservableObject {
     // Use your Mac's IP if 127.0.0.1 fails
     let apiBase = "http://127.0.0.1:3000/api"
     
-    init() {}
+    init() {
+            // Check if a token exists on disk when the app starts
+            if let savedToken = UserDefaults.standard.string(forKey: "user_token"),
+               let savedUsername = UserDefaults.standard.string(forKey: "user_name") {
+                self.token = savedToken
+                self.username = savedUsername
+                self.isLoggedIn = true // This triggers the immediate jump to BookListView
+                
+                // Refresh data in the background
+                Task {
+                    await fetchBooks()
+                }
+            }
+        }
     
     func logout() {
-        self.isLoggedIn = false
-        self.token = ""
-        self.username = ""
-        self.books = []
-    }
+            self.isLoggedIn = false
+            self.token = ""
+            self.username = ""
+            self.books = []
+            
+            UserDefaults.standard.removeObject(forKey: "user_token")
+            UserDefaults.standard.removeObject(forKey: "user_name")
+        }
     
     struct LoginResponse: Codable {
         let accessToken: String
@@ -48,19 +64,21 @@ class LibraryViewModel: ObservableObject {
         request.httpBody = try? JSONEncoder().encode(body)
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                if (200...201).contains(httpResponse.statusCode) {
-                    let decoded = try JSONDecoder().decode(LoginResponse.self, from: data)
-                    self.token = decoded.accessToken
-                    self.username = decoded.username
-                    self.isLoggedIn = true
-                    await fetchBooks()
-                } else {
-                    self.errorMessage = "Login Failed: Status \(httpResponse.statusCode)"
-                }
-            }
+                    let (data, response) = try await URLSession.shared.data(for: request)
+                    if let httpResponse = response as? HTTPURLResponse, (200...201).contains(httpResponse.statusCode) {
+                        let decoded = try JSONDecoder().decode(LoginResponse.self, from: data)
+                        
+                        // Save to RAM
+                        self.token = decoded.accessToken
+                        self.username = decoded.username
+                        self.isLoggedIn = true
+                        
+                        // SAVE TO DISK (Persistence)
+                        UserDefaults.standard.set(decoded.accessToken, forKey: "user_token")
+                        UserDefaults.standard.set(decoded.username, forKey: "user_name")
+                        
+                        await fetchBooks()
+                    }
         } catch {
             self.errorMessage = "Network Error: \(error.localizedDescription)"
             print("Auth Error: \(error)")
