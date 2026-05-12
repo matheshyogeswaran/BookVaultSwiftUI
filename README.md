@@ -33,10 +33,10 @@ BookVault is a SwiftUI iOS application for managing books using a Node.js and Mo
 # Screenshots
 
 <p float="left">
-  <img src="Screenshots/loginScreen.png" width="250"/>
-  <img src="Screenshots/home.png" width="250"/>
-  <img src="Screenshots/Profile.png" width="250"/>
-  <img src="Screenshots/signUpScreen.png" width="250"/>
+  <img src="BookVault/Screenshots/loginScreen.png" width="250"/>
+  <img src="BookVault/Screenshots/home.png" width="250"/>
+  <img src="BookVault/Screenshots/Profile.png" width="250"/>
+  <img src="BookVault/Screenshots/signUpScreen.png" width="250"/>
 </p>
 
 ---
