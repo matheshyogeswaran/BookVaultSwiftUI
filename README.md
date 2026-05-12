@@ -53,7 +53,15 @@ git clone https://github.com/matheshyogeswaran/BookVaultSwiftUI.git
 
 Open the `.xcodeproj` or `.xcworkspace` file using Xcode.
 
+
+## Backend API
+
+BookVault uses a separate Node.js backend:
+
+👉 https://github.com/matheshyogeswaran/book-store-api
+
 ## Run Backend
+
 
 Make sure your backend server is running.
 
