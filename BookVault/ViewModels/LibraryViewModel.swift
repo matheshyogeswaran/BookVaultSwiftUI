@@ -18,7 +18,7 @@ class LibraryViewModel: ObservableObject {
     @Published var statusMessage = ""
     @Published var username: String = ""
     
-    // Use your Mac's IP if 127.0.0.1 fails
+    
     let apiBase = "http://127.0.0.1:3000/api"
     
     init() {
@@ -78,7 +78,7 @@ class LibraryViewModel: ObservableObject {
                         UserDefaults.standard.set(decoded.username, forKey: "user_name")
                         
                         await fetchBooks()
-                    }
+                    } 
         } catch {
             self.errorMessage = "Network Error: \(error.localizedDescription)"
             print("Auth Error: \(error)")
