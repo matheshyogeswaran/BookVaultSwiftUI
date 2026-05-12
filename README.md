@@ -9,9 +9,6 @@ BookVault is a SwiftUI iOS application for managing books using a Node.js and Mo
 - User Authentication (JWT)
 - View Books
 - Add Books
-- Edit Books
-- Delete Books
-- Author & Genre Support
 - REST API Integration
 
 ---
