@@ -13,20 +13,14 @@ struct EditBookView: View {
     let book: Book
     
     @State private var title: String
-    @State private var author: String
-    @State private var genre: String
     @State private var year: String
     
     init(vm: LibraryViewModel, book: Book) {
         self.vm = vm
         self.book = book
         
-        // --- DYNAMIC INITIALIZATION FROM API DATA ---
         _title = State(initialValue: book.title)
-        _author = State(initialValue: book.author?.name ?? "")
-        _genre = State(initialValue: book.genre?.name ?? "")
         
-        // Convert the Int? from API to String for the TextField
         if let yearValue = book.publishedYear {
             _year = State(initialValue: String(yearValue))
         } else {
@@ -43,37 +37,35 @@ struct EditBookView: View {
                         .foregroundColor(.white)
                         .padding(.top)
                     
-                    VStack(spacing: 15) {
+                    VStack(spacing: 20) {
+                        // EDITABLE FIELDS
                         Group {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("Title").font(.caption).foregroundColor(.gray)
-                                TextField("Book Title", text: $title)
-                            }
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("Author").font(.caption).foregroundColor(.gray)
-                                TextField("Author Name", text: $author)
-                            }
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("Genre").font(.caption).foregroundColor(.gray)
-                                TextField("Genre", text: $genre)
-                            }
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text("Year").font(.caption).foregroundColor(.gray)
-                                TextField("Published Year", text: $year)
-                                    .keyboardType(.numberPad)
-                            }
+                            fieldLabel("Book Title")
+                            TextField("Enter title", text: $title)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            
+                            fieldLabel("Published Year")
+                            TextField("Enter year", text: $year)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .keyboardType(.numberPad)
                         }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(12)
+
+                        Divider()
+
+                        // READ-ONLY FIELDS (From API)
+                        Group {
+                            readOnlyField(label: "Author", value: book.author?.name ?? "Unknown")
+                            readOnlyField(label: "Genre", value: book.genre?.name ?? "General")
+                        }
                         
                         Button {
                             Task {
+                                // We still send the existing author/genre names to the API
                                 await vm.updateBook(
                                     id: book._id,
                                     title: title,
-                                    author: author,
-                                    genre: genre,
+                                    author: book.author?.name ?? "",
+                                    genre: book.genre?.name ?? "",
                                     year: year
                                 )
                                 dismiss()
@@ -86,9 +78,10 @@ struct EditBookView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(12)
                         }
-                        .disabled(title.isEmpty || author.isEmpty)
+                        .disabled(title.isEmpty)
+                        .padding(.top, 10)
                     }
-                    .padding()
+                    .padding(25)
                     .background(.white)
                     .cornerRadius(25)
                     .padding(.horizontal)
@@ -103,6 +96,28 @@ struct EditBookView: View {
                 }
             }
             .navigationBarHidden(true)
+        }
+    }
+
+    // Helper for labels
+    private func fieldLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.caption.bold())
+            .foregroundColor(.gray)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    // Helper for read-only display
+    private func readOnlyField(label: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(label).font(.caption.bold()).foregroundColor(.gray)
+            Text(value)
+                .font(.body)
+                .foregroundColor(.secondary)
+                .padding(8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
         }
     }
 }
