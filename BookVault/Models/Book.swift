@@ -12,7 +12,7 @@ struct Book: Identifiable, Codable {
     var title: String
     let author: AuthorDetails?
     let genre: GenreDetails?
-    
+    let publishedYear: Int?
     // Identifiable requires 'id', but MongoDB uses '_id'
     var id: String { _id }
 }

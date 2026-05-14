@@ -107,6 +107,51 @@ class LibraryViewModel: ObservableObject {
         let publishedYear: Int
     }
     
+    
+    @MainActor
+    func deleteBook(at offsets: IndexSet) async {
+        for index in offsets {
+            let book = books[index]
+            guard let url = URL(string: "\(apiBase)/books/\(book._id)") else { continue }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "DELETE"
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+            do {
+                let (_, response) = try await URLSession.shared.data(for: request)
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                    self.books.remove(at: index)
+                }
+            } catch {
+                print("Delete Error: \(error)")
+            }
+        }
+    }
+
+    @MainActor
+    func updateBook(id: String, title: String, author: String, genre: String, year: String) async {
+        guard let url = URL(string: "\(apiBase)/books/\(id)") else { return }
+        let yearInt = Int(year) ?? 0
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body = CreateBookRequest(title: title, authorName: author, genreName: genre, publishedYear: yearInt)
+        request.httpBody = try? JSONEncoder().encode(body)
+
+        do {
+            let (_, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                await fetchBooks() 
+            }
+        } catch {
+            print("Update Error: \(error)")
+        }
+    }
+    
     @MainActor
     func addBook(title: String, author: String, genre: String, year: String) async {
         guard let url = URL(string: "\(apiBase)/books") else { return }
