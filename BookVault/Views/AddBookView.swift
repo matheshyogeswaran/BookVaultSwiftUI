@@ -17,26 +17,19 @@ struct AddBookView: View {
     @State private var year = ""
     
     var body: some View {
-        
         NavigationView {
-            
             AppBackground {
-                
                 VStack {
-                    
                     Text("Add New Book")
                         .font(.largeTitle.bold())
                         .foregroundColor(.white)
                         .padding(.top)
                     
                     VStack(spacing: 15) {
-                        
                         Group {
-                            
                             TextField("Book Title", text: $title)
                             TextField("Author Name", text: $author)
                             TextField("Genre", text: $genre)
-                            
                             TextField("Published Year", text: $year)
                                 .keyboardType(.numberPad)
                         }
@@ -44,10 +37,11 @@ struct AddBookView: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(12)
                         
+                       
                         if !vm.statusMessage.isEmpty {
                             Text(vm.statusMessage)
                                 .font(.caption)
-                                .foregroundColor(.red)
+                                .foregroundColor(vm.statusMessage.contains("Success") ? .green : .red) // Turn green for success!
                         }
                         
                         Button {
@@ -91,6 +85,9 @@ struct AddBookView: View {
                 .padding(.top)
             }
             .navigationBarHidden(true)
+            .onAppear {
+                vm.statusMessage = ""
+            }
         }
     }
 }

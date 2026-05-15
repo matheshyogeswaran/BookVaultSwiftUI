@@ -27,7 +27,7 @@ class LibraryViewModel: ObservableObject {
                let savedUsername = UserDefaults.standard.string(forKey: "user_name") {
                 self.token = savedToken
                 self.username = savedUsername
-                self.isLoggedIn = true // This triggers the immediate jump to BookListView
+                self.isLoggedIn = true 
                 
                 // Refresh data in the background
                 Task {
@@ -52,20 +52,25 @@ class LibraryViewModel: ObservableObject {
     }
 
     @MainActor
-    func authenticate(user: String, pass: String, isSignup: Bool) async {
-        let path = isSignup ? "/auth/register" : "/auth/login"
-        guard let url = URL(string: "\(apiBase)\(path)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let body = ["username": user, "password": pass]
-        request.httpBody = try? JSONEncoder().encode(body)
+        func authenticate(user: String, pass: String, isSignup: Bool) async {
+            // Clear past error states before starting a new round of authentication
+            self.errorMessage = ""
+            
+            let path = isSignup ? "/auth/register" : "/auth/login"
+            guard let url = URL(string: "\(apiBase)\(path)") else { return }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            let body = ["username": user, "password": pass]
+            request.httpBody = try? JSONEncoder().encode(body)
 
-        do {
-                    let (data, response) = try await URLSession.shared.data(for: request)
-                    if let httpResponse = response as? HTTPURLResponse, (200...201).contains(httpResponse.statusCode) {
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    if (200...201).contains(httpResponse.statusCode) {
                         let decoded = try JSONDecoder().decode(LoginResponse.self, from: data)
                         
                         // Save to RAM
@@ -78,12 +83,23 @@ class LibraryViewModel: ObservableObject {
                         UserDefaults.standard.set(decoded.username, forKey: "user_name")
                         
                         await fetchBooks()
-                    } 
-        } catch {
-            self.errorMessage = "Network Error: \(error.localizedDescription)"
-            print("Auth Error: \(error)")
+                    } else {
+                        // --- FIXED: Extracts error reason payload from Express JSON responses ---
+                        if let jsonError = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                           let backendMessage = jsonError["message"] as? String {
+                            self.errorMessage = backendMessage
+                        } else {
+                            // Fallback message if raw text or an uncommon schema is thrown by Node
+                            let rawReason = String(data: data, encoding: .utf8) ?? ""
+                            self.errorMessage = !rawReason.isEmpty ? rawReason : (isSignup ? "Registration failed." : "Invalid username or password.")
+                        }
+                    }
+                }
+            } catch {
+                self.errorMessage = "Network Error: \(error.localizedDescription)"
+                print("Auth Error: \(error)")
+            }
         }
-    }
 
     @MainActor
     func fetchBooks() async {

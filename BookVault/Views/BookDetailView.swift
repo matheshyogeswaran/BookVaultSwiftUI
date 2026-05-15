@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct BookDetailView: View {
-    @ObservedObject var vm: LibraryViewModel // Add this to call update functions
+    @ObservedObject var vm: LibraryViewModel
     let book: Book
     
     @State private var showEditSheet = false
@@ -15,7 +15,8 @@ struct BookDetailView: View {
     var body: some View {
         AppBackground {
             VStack(spacing: 20) {
-                // ... (Keep your existing Image and Info Grid code here)
+                                  
+               
                 
                 VStack(alignment: .leading, spacing: 15) {
                     DetailRow(label: "Genre", value: book.genre?.name ?? "N/A")
